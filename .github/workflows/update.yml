@@ -1,0 +1,34 @@
+name: Auto Update Stock Data
+
+on:
+  schedule:
+    - cron: "0 10 * * *"   # 每日香港時間18:00（UTC 10:00）
+  workflow_dispatch:        # 手動都可以跑
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install libraries
+        run: |
+          pip install pandas yfinance openpyxl
+
+      - name: Run main.py
+        run: python main.py
+
+      - name: Commit updated files
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/history.xlsx data/output.xlsx
+          git commit -m "auto update data" || echo "no changes"
+          git push

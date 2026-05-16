@@ -1,11 +1,20 @@
 import streamlit as st
 import pandas as pd
+import os
 
+# ✅ 檢查有冇 output.xlsx
+if not os.path.exists("data/output.xlsx"):
+    st.warning("⚠️ 請先運行 main.py")
+    st.stop()
+
+# ✅ 必須放最頂
 st.set_page_config(page_title="HK Stock Dashboard", layout="wide")
 
 st.title("📊 香港股票市場分析 Dashboard")
 
+# ------------------------
 # 讀取 Excel
+# ------------------------
 file_path = "data/output.xlsx"
 
 df = pd.read_excel(file_path, sheet_name="Top Stocks")
@@ -15,7 +24,6 @@ sector_df = pd.read_excel(file_path, sheet_name="Sector Analysis")
 # 股票表
 # ------------------------
 st.subheader("🔥 Top 成交量股票")
-
 st.dataframe(df, use_container_width=True)
 
 # ------------------------
@@ -34,14 +42,12 @@ else:
 # 板塊分析
 # ------------------------
 st.subheader("📊 板塊熱度")
-
 st.bar_chart(sector_df.set_index("Sector"))
 
 # ------------------------
-# 排名圖（成交量）
+# 成交量排名圖
 # ------------------------
 st.subheader("📈 成交量排名")
 
 volume_chart = df.set_index("Stock")["Volume"]
-
 st.bar_chart(volume_chart)
